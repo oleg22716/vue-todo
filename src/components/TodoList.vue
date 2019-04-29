@@ -3,9 +3,10 @@
   <div class="hello">
     <div class="holder">
       <form @submit.prevent="addElem">
+        
       <input type="text" placeholder="Enter what you have to do.." v-model="elem" v-validate="'min:3'" name="input">
       
-      <input type="checkbox" id="checkbox" v-model="checked">
+      
       <transition name="alert-in" enter-active-class="animated jello" leave-active-class="animated lightSpeedOut">
       <p class="alert" v-if="errors.has('input')">{{ errors.first('input') }} </p>
       </transition>
@@ -14,7 +15,10 @@
 
       <ul>
         <transition-group name="list" enter-active-class="animated bounceInUp" leave-active-class="animated bounceOutDown">
-          <li v-for="(data, index) in todos" :key="index">{{ index }}. {{data.elem}}<i class="fa fa-close" style="font-size:24px;color:red" v-on:click="remove(index)"></i></li>
+          <li v-for="(data, index) in todos" :key="index" v-bind:class="{ stroked: isCheckedArray[index], 'base': !isCheckedArray[index]}">{{ index }}. {{data.elem}}
+            <i class="fa" v-bind:class="{ 'fa-circle': !isCheckedArray[index], 'fa-check-circle': isCheckedArray[index]}" style="font-size:24px;color:black" v-on:click="remove(index)"></i></li>
+            
+
           
         </transition-group>
       </ul>
@@ -31,16 +35,16 @@ export default {
   name: "TodoList",
   data() {
     return {
-      checked: false,
       elem: "",
+      isCheckedArray:[true,true,false,false],
       todos: [
-        { elem: "Vue.js" },
-        { elem: "Frontend Developer" },
+        { elem: "При удалении - зачеркивать." },
+        { elem: "Убрать чекбокс" },
         {
           elem:
-            "Some pretty damn long string for testing purposes. Just like that. Perhaps i should add another few words, here they are: Alpha, Giraffe, Democracy"
+            "yarn run lint - пофиксить ошибки"
         },
-        { elem: "Send resume" }
+        { elem: "описать настройку среды в документации с нуля, если нет ни хостов ни вебсервера на локальной машине" }
       ]
     }
   },
@@ -50,7 +54,8 @@ export default {
         if(result){
           this.todos.push({elem: this.elem});
           this.elem = '';
-          console.log('Elem is: ' + this.checked);
+          this.isCheckedArray.push(false);
+          console.log('Elem is: ' + this.isCheckedArray);
         }
         else {
           console.log('Not valid');
@@ -60,8 +65,13 @@ export default {
       
     },
     remove(id){
-      this.todos.splice(id,1);
-
+      // this.todos[id].elem.style.setProperty("text-decoration", "line-through");
+      console.log("in remove. b4"+this.isCheckedArray[id])
+      this.isCheckedArray[id]=true;
+      console.log("in remove. after"+this.isCheckedArray[id])
+      this.isCheckedArray.push('');
+      this.isCheckedArray.splice(this.isCheckedArray.length-1)
+      
     }
   }
 };
